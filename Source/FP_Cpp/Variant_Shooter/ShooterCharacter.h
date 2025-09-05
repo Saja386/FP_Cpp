@@ -31,13 +31,13 @@ class FP_CPP_API AShooterCharacter : public AFP_CppCharacter, public IShooterWea
 
 protected:
 
-	/** Fire weapon input action */
-	UPROPERTY(EditAnywhere, Category ="Input")
-	UInputAction* FireAction;
-
-	/** Switch weapon input action */
-	UPROPERTY(EditAnywhere, Category ="Input")
-	UInputAction* SwitchWeaponAction;
+	// /** Fire weapon input action */
+	// UPROPERTY(EditAnywhere, Category ="Input")
+	// UInputAction* FireAction;
+	//
+	// /** Switch weapon input action */
+	// UPROPERTY(EditAnywhere, Category ="Input")
+	// UInputAction* SwitchWeaponAction;
 
 	/** Name of the first person mesh weapon socket */
 	UPROPERTY(EditAnywhere, Category ="Weapons")
@@ -94,8 +94,8 @@ protected:
 	/** Gameplay cleanup */
 	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
-	/** Set up input action bindings */
-	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
+	// /** Set up input action bindings */
+	// virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 
 public:
 

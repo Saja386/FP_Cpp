@@ -26,7 +26,6 @@ void AFP_Controller::BeginPlay()
 void AFP_Controller::SetupInputComponent()
 {
 	Super::SetupInputComponent();
-	Super::SetupInputComponent();
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
 		EnhancedInputComponent->BindAction(PlayerMoveAction, ETriggerEvent::Triggered , this , &AFP_Controller::Move);

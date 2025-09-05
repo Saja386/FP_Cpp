@@ -23,7 +23,6 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
-private:
 	//Input Variables
 	UPROPERTY(EditAnywhere , Category = "Input")
 	TObjectPtr<UInputMappingContext> PlayerMappingContext;
@@ -33,7 +32,7 @@ private:
 	TObjectPtr<UInputAction> PlayerLookAction;
 	UPROPERTY(EditAnywhere,  Category = "Input")
 	TObjectPtr<UInputAction> PlayerJumpAction;
-	
+private:
 	//Movement Function
 	void Move (const FInputActionValue& MoveInputAction);
 	void Look (const FInputActionValue& MoveInputAction);
