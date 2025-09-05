@@ -48,7 +48,6 @@ void AFP_CppCharacter::DoAim(float Yaw, float Pitch)
 {
 	if (GetController())
 	{
-		UE_LOG(LogTemp, Display, TEXT("DoAim"));
 		// pass the rotation inputs
 		AddControllerYawInput(Yaw);
 		AddControllerPitchInput(Pitch);
