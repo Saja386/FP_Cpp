@@ -32,12 +32,13 @@ void AFP_ShooterCharacterController::BeginPlay()
 	UEnhancedInputLocalPlayerSubsystem* InputLocalPlayerSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
 	if (InputLocalPlayerSubsystem)
 	{
-		InputLocalPlayerSubsystem->AddMappingContext(ShooterMappingContext,1);
+		InputLocalPlayerSubsystem->AddMappingContext(ShooterMappingContext , 0);
 	}
 }
 
 void AFP_ShooterCharacterController::StartFireTriggerd()
 {
+	UE_LOG(LogTemp, Display, TEXT("Starting Fire Triggerd"));
 	if(APawn* ControlledPawn = GetPawn())
 	{
 		Cast<AShooterCharacter>(ControlledPawn)->DoStartFiring();
