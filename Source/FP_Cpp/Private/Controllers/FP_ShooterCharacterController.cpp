@@ -4,7 +4,13 @@
 #include "Controllers/FP_ShooterCharacterController.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "FP_Cpp.h"
 #include "ShooterCharacter.h"
+#include "Blueprint/UserWidget.h"
+#include "ShooterBulletCounterUI.h"
+#include "GameFramework/PlayerStart.h"
+#include "Kismet/GameplayStatics.h"
+
 
 void AFP_ShooterCharacterController::SetupInputComponent()
 {
@@ -27,6 +33,20 @@ void AFP_ShooterCharacterController::SetupInputComponent()
 void AFP_ShooterCharacterController::BeginPlay()
 {
 	Super::BeginPlay();
+	//Add The Bullet Counter Widget
+	if (IsLocalPlayerController())
+	{
+		BulletCounterUI = CreateWidget<UShooterBulletCounterUI>(this, BulletCounterUIClass);
+		if (BulletCounterUI)
+		{
+			BulletCounterUI->AddToPlayerScreen(0);
+
+		} else {
+
+			UE_LOG(LogFP_Cpp, Error, TEXT("Could not spawn bullet counter widget."));
+		}
+	}
+	
 	//Add Input Mapping Context
 	check(ShooterMappingContext);
 	UEnhancedInputLocalPlayerSubsystem* InputLocalPlayerSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
@@ -36,9 +56,68 @@ void AFP_ShooterCharacterController::BeginPlay()
 	}
 }
 
+void AFP_ShooterCharacterController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+	// subscribe to the pawn's OnDestroyed delegate
+	InPawn->OnDestroyed.AddDynamic(this, &AFP_ShooterCharacterController::OnPawnDestroyed);
+
+	// is this a shooter character?
+	if (AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(InPawn))
+	{
+		// add the player tag
+		ShooterCharacter->Tags.Add(PlayerPawnTag);
+
+		// subscribe to the pawn's delegates
+		ShooterCharacter->OnBulletCountUpdated.AddDynamic(this, &AFP_ShooterCharacterController::OnBulletCountUpdated);
+		ShooterCharacter->OnDamaged.AddDynamic(this, &AFP_ShooterCharacterController::OnPawnDamaged);
+
+		// force update the life bar
+		ShooterCharacter->OnDamaged.Broadcast(1.0f);
+	}
+}
+
+void AFP_ShooterCharacterController::OnPawnDestroyed(AActor* DestroyedActor)
+{
+	// reset the bullet counter HUD
+	BulletCounterUI->BP_UpdateBulletCounter(0, 0);
+
+	// find the player start
+	TArray<AActor*> ActorList;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), ActorList);
+
+	if (ActorList.Num() > 0)
+	{
+		// select a random player start
+		AActor* RandomPlayerStart = ActorList[FMath::RandRange(0, ActorList.Num() - 1)];
+
+		// spawn a character at the player start
+		const FTransform SpawnTransform = RandomPlayerStart->GetActorTransform();
+
+		if (AShooterCharacter* RespawnedCharacter = GetWorld()->SpawnActor<AShooterCharacter>(CharacterClass, SpawnTransform))
+		{
+			// possess the character
+			Possess(RespawnedCharacter);
+		}
+	}
+}
+
+void AFP_ShooterCharacterController::OnBulletCountUpdated(int32 MagazineSize, int32 Bullets)
+{if (BulletCounterUI)
+{
+	BulletCounterUI->BP_UpdateBulletCounter(MagazineSize, Bullets);
+}
+}
+
+void AFP_ShooterCharacterController::OnPawnDamaged(float LifePercent)
+{if (IsValid(BulletCounterUI))
+{
+	BulletCounterUI->BP_Damaged(LifePercent);
+}
+}
+
 void AFP_ShooterCharacterController::StartFireTriggerd()
 {
-	UE_LOG(LogTemp, Display, TEXT("Starting Fire Triggerd"));
 	if(APawn* ControlledPawn = GetPawn())
 	{
 		Cast<AShooterCharacter>(ControlledPawn)->DoStartFiring();

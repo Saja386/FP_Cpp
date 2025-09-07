@@ -6,6 +6,10 @@
 #include "FP_Controller.h"
 #include "FP_ShooterCharacterController.generated.h"
 
+class UShooterBulletCounterUI;
+class AShooterCharacter;
+class UShooterBulletCounterUI;
+
 /**
  * 
  */
@@ -24,8 +28,30 @@ protected:
 
 	virtual void SetupInputComponent() override;
 	virtual void BeginPlay() override;
-	
+	virtual void OnPossess(APawn* InPawn) override;
 
+	//Shooter character
+	UPROPERTY(EditAnywhere, Category="Shooter|Respawn")
+	TSubclassOf<AShooterCharacter> CharacterClass;
+	
+	UPROPERTY(EditAnywhere, Category="Shooter|UI")
+	TSubclassOf<UShooterBulletCounterUI> BulletCounterUIClass;
+
+	UPROPERTY(EditAnywhere, Category="Shooter|Player")
+	FName PlayerPawnTag = FName("Player");
+
+	TObjectPtr<UShooterBulletCounterUI> BulletCounterUI;
+	
+	UFUNCTION()
+	void OnPawnDestroyed(AActor* DestroyedActor);
+
+	/** Called when the bullet count on the possessed pawn is updated */
+	UFUNCTION()
+	void OnBulletCountUpdated(int32 MagazineSize, int32 Bullets);
+
+	/** Called when the possessed pawn is damaged */
+	UFUNCTION()
+	void OnPawnDamaged(float LifePercent);
 private:
 	void StartFireTriggerd ();
 	void StopFireTriggerd();
