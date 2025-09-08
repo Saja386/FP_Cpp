@@ -15,6 +15,11 @@
 
 AShooterProjectile::AShooterProjectile()
 {
+	bNetLoadOnClient = true;
+	bReplicates = true;
+	SetReplicatingMovement(true);
+
+	
 	PrimaryActorTick.bCanEverTick = true;
 
 	// create the collision component and assign it as the root
