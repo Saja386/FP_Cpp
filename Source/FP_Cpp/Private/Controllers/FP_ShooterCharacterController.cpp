@@ -118,7 +118,8 @@ void AFP_ShooterCharacterController::OnPawnDamaged(float LifePercent)
 
 void AFP_ShooterCharacterController::StartFireTriggerd()
 {
-	if(APawn* ControlledPawn = GetPawn())
+	APawn* ControlledPawn = GetPawn();
+	if(ControlledPawn && HasAuthority())
 	{
 		Cast<AShooterCharacter>(ControlledPawn)->DoStartFiring();
 	}
@@ -126,7 +127,8 @@ void AFP_ShooterCharacterController::StartFireTriggerd()
 
 void AFP_ShooterCharacterController::StopFireTriggerd()
 {
-	if(APawn* ControlledPawn = GetPawn())
+	APawn* ControlledPawn = GetPawn();
+	if(ControlledPawn && HasAuthority())
 	{
 		Cast<AShooterCharacter>(ControlledPawn)->DoStopFiring();
 	}
@@ -134,7 +136,8 @@ void AFP_ShooterCharacterController::StopFireTriggerd()
 
 void AFP_ShooterCharacterController::SwitchWeapenTriggerd()
 {
-	if(APawn* ControlledPawn = GetPawn())
+	APawn* ControlledPawn = GetPawn();
+	if(ControlledPawn && HasAuthority())
 	{
 		Cast<AShooterCharacter>(ControlledPawn)->DoSwitchWeapon();
 	}

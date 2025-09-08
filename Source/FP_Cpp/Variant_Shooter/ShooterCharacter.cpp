@@ -15,6 +15,9 @@
 
 AShooterCharacter::AShooterCharacter()
 {
+	bReplicates = true;
+	bNetLoadOnClient = true;
+	SetReplicatingMovement(true);
 	// create the noise emitter component
 	PawnNoiseEmitter = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("Pawn Noise Emitter"));
 
