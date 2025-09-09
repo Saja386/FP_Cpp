@@ -108,13 +108,22 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Input")
 	void DoStartFiring();
 
+	UFUNCTION(Server , Reliable , BlueprintCallable , Category="Input")
+	void Server_DoStartFiring();
+	
 	/** Handles stop firing input */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	void DoStopFiring();
 
+	UFUNCTION(Server , Reliable , BlueprintCallable, Category="Input")
+	void Server_DoStopFiring();
+
 	/** Handles switch weapon input */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	void DoSwitchWeapon();
+
+	UFUNCTION(Server , Reliable ,BlueprintCallable, Category="Input")
+	void Server_DoSwitchWeapon();
 
 public:
 

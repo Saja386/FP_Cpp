@@ -123,6 +123,10 @@ void AFP_ShooterCharacterController::StartFireTriggerd()
 	{
 		Cast<AShooterCharacter>(ControlledPawn)->DoStartFiring();
 	}
+	if (ControlledPawn && !HasAuthority())
+	{
+		Cast<AShooterCharacter>(ControlledPawn)->Server_DoStartFiring();
+	}
 }
 
 void AFP_ShooterCharacterController::StopFireTriggerd()
@@ -131,6 +135,10 @@ void AFP_ShooterCharacterController::StopFireTriggerd()
 	if(ControlledPawn && HasAuthority())
 	{
 		Cast<AShooterCharacter>(ControlledPawn)->DoStopFiring();
+	}
+	if (ControlledPawn && !HasAuthority())
+	{
+		Cast<AShooterCharacter>(ControlledPawn)->Server_DoStopFiring();
 	}
 }
 
@@ -141,4 +149,8 @@ void AFP_ShooterCharacterController::SwitchWeapenTriggerd()
 	{
 		Cast<AShooterCharacter>(ControlledPawn)->DoSwitchWeapon();
 	}
+	if (ControlledPawn && !HasAuthority())
+	{
+		Cast<AShooterCharacter>(ControlledPawn)->Server_DoSwitchWeapon();
+	}		
 }

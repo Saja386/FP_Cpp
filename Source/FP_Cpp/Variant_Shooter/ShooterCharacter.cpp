@@ -96,6 +96,14 @@ void AShooterCharacter::DoStartFiring()
 	}
 }
 
+void AShooterCharacter::Server_DoStartFiring_Implementation()
+{
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->StartFiring();
+	}
+}
+
 void AShooterCharacter::DoStopFiring()
 {
 	// stop firing the current weapon
@@ -105,7 +113,46 @@ void AShooterCharacter::DoStopFiring()
 	}
 }
 
+void AShooterCharacter::Server_DoStopFiring_Implementation()
+{
+	// stop firing the current weapon
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->StopFiring();
+	}
+}
+
 void AShooterCharacter::DoSwitchWeapon()
+{
+	// ensure we have at least two weapons two switch between
+	if (OwnedWeapons.Num() > 1)
+	{
+		// deactivate the old weapon
+		CurrentWeapon->DeactivateWeapon();
+
+		// find the index of the current weapon in the owned list
+		int32 WeaponIndex = OwnedWeapons.Find(CurrentWeapon);
+
+		// is this the last weapon?
+		if (WeaponIndex == OwnedWeapons.Num() - 1)
+		{
+			// loop back to the beginning of the array
+			WeaponIndex = 0;
+		}
+		else {
+			// select the next weapon index
+			++WeaponIndex;
+		}
+
+		// set the new weapon as current
+		CurrentWeapon = OwnedWeapons[WeaponIndex];
+
+		// activate the new weapon
+		CurrentWeapon->ActivateWeapon();
+	}
+}
+
+void AShooterCharacter::Server_DoSwitchWeapon_Implementation()
 {
 	// ensure we have at least two weapons two switch between
 	if (OwnedWeapons.Num() > 1)
