@@ -56,6 +56,7 @@ protected:
 	float MaxHP = 500.0f;
 
 	/** Current HP remaining to this character */
+	UPROPERTY(Replicated)
 	float CurrentHP = 0.0f;
 
 	/** Team ID for this character*/
@@ -86,6 +87,7 @@ public:
 	/** Constructor */
 	AShooterCharacter();
 
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 protected:
 
 	/** Gameplay initialization */
