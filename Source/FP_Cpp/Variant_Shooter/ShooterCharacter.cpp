@@ -95,13 +95,13 @@ float AShooterCharacter::TakeDamage(float Damage, struct FDamageEvent const& Dam
 
 		// update the HUD
 		
-		Multicast_UpdateHealth(FMath::Max(0.0f, CurrentHP / MaxHP));
+		Client_UpdateHealth(FMath::Max(0.0f, CurrentHP / MaxHP));
 		return Damage;
 	}
 	return 0.0f;
 }
 
-void AShooterCharacter::Multicast_UpdateHealth_Implementation(float HealthRatio)
+void AShooterCharacter::Client_UpdateHealth_Implementation(float HealthRatio)
 {
 	OnDamaged.Broadcast(HealthRatio);
 }

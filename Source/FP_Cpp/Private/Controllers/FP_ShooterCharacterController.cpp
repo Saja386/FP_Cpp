@@ -115,15 +115,23 @@ void AFP_ShooterCharacterController::OnPawnDestroyed(AActor* DestroyedActor)
 }
 
 void AFP_ShooterCharacterController::OnBulletCountUpdated(int32 MagazineSize, int32 Bullets)
-{if (BulletCounterUI)
 {
+	
+	if (BulletCounterUI)
+{
+	UE_LOG(LogTemp,Display,TEXT("BulletCounterUI Visible"));
+
 	BulletCounterUI->BP_UpdateBulletCounter(MagazineSize, Bullets);
 }
 }
 
 void AFP_ShooterCharacterController::OnPawnDamaged(float LifePercent)
-{if (IsValid(BulletCounterUI))
 {
+	UE_LOG(LogTemp , Warning , TEXT("Life Percent : %f") , LifePercent);
+
+	if (IsValid(BulletCounterUI))
+{
+	UE_LOG(LogTemp , Warning , TEXT("Life Percent : %f") , LifePercent);
 	BulletCounterUI->BP_Damaged(LifePercent);
 }
 }
