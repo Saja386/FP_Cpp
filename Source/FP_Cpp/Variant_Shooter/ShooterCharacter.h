@@ -52,7 +52,7 @@ protected:
 	float MaxAimDistance = 10000.0f;
 
 	/** Max HP this character can have */
-	UPROPERTY(EditAnywhere, Category="Health")
+	UPROPERTY(Replicated , EditAnywhere, Category="Health")
 	float MaxHP = 500.0f;
 
 	/** Current HP remaining to this character */
@@ -103,6 +103,8 @@ public:
 
 	/** Handle incoming damage */
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_UpdateHealth(float HealthRatio);
 
 public:
 
@@ -168,6 +170,10 @@ protected:
 	/** Called when this character's HP is depleted */
 	void Die();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_DeathHandle();
+
+	
 	/** Called to allow Blueprint code to react to this character's death */
 	UFUNCTION(BlueprintImplementableEvent, Category="Shooter", meta = (DisplayName = "On Death"))
 	void BP_OnDeath();

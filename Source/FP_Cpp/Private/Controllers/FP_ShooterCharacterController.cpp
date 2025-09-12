@@ -40,8 +40,10 @@ void AFP_ShooterCharacterController::BeginPlay()
 		if (BulletCounterUI)
 		{
 			BulletCounterUI->AddToPlayerScreen(0);
-
-		} else {
+			BulletCounterUI->SetVisibility(ESlateVisibility::Visible);
+		}
+		else
+		{
 
 			UE_LOG(LogFP_Cpp, Error, TEXT("Could not spawn bullet counter widget."));
 		}
@@ -80,24 +82,34 @@ void AFP_ShooterCharacterController::OnPossess(APawn* InPawn)
 void AFP_ShooterCharacterController::OnPawnDestroyed(AActor* DestroyedActor)
 {
 	// reset the bullet counter HUD
-	BulletCounterUI->BP_UpdateBulletCounter(0, 0);
-
-	// find the player start
-	TArray<AActor*> ActorList;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), ActorList);
-
-	if (ActorList.Num() > 0)
+	if (IsValid(BulletCounterUI))
 	{
-		// select a random player start
-		AActor* RandomPlayerStart = ActorList[FMath::RandRange(0, ActorList.Num() - 1)];
+		BulletCounterUI->BP_UpdateBulletCounter(0, 0);
+	}
+	else
+	{
+		UE_LOG(LogTemp , Error , TEXT("Could not update bullet counter UI as it is invalid"));
+	}
+	if (HasAuthority())
+	{
+		
+		// find the player start
+		TArray<AActor*> ActorList;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), ActorList);
 
-		// spawn a character at the player start
-		const FTransform SpawnTransform = RandomPlayerStart->GetActorTransform();
-
-		if (AShooterCharacter* RespawnedCharacter = GetWorld()->SpawnActor<AShooterCharacter>(CharacterClass, SpawnTransform))
+		if (ActorList.Num() > 0)
 		{
-			// possess the character
-			Possess(RespawnedCharacter);
+			// select a random player start
+			AActor* RandomPlayerStart = ActorList[FMath::RandRange(0, ActorList.Num() - 1)];
+
+			// spawn a character at the player start
+			const FTransform SpawnTransform = RandomPlayerStart->GetActorTransform();
+
+			if (AShooterCharacter* RespawnedCharacter = GetWorld()->SpawnActor<AShooterCharacter>(CharacterClass, SpawnTransform))
+			{
+				// possess the character
+				Possess(RespawnedCharacter);
+			}
 		}
 	}
 }

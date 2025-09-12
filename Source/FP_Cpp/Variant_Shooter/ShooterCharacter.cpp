@@ -31,6 +31,7 @@ void AShooterCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimePropert
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AShooterCharacter , CurrentHP);
+	DOREPLIFETIME(AShooterCharacter , MaxHP);
 	
 }
 
@@ -75,25 +76,34 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 float AShooterCharacter::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	// ignore if already dead
-	if (CurrentHP <= 0.0f)
+	if (HasAuthority())
 	{
-		return 0.0f;
+		// ignore if already dead
+		if (CurrentHP <= 0.0f)
+		{
+			return 0.0f;
+		}
+
+		// Reduce HP
+		CurrentHP -= Damage;
+
+		// Have we depleted HP?
+		if (CurrentHP <= 0.0f)
+		{
+			Die();
+		}
+
+		// update the HUD
+		
+		Multicast_UpdateHealth(FMath::Max(0.0f, CurrentHP / MaxHP));
+		return Damage;
 	}
+	return 0.0f;
+}
 
-	// Reduce HP
-	CurrentHP -= Damage;
-
-	// Have we depleted HP?
-	if (CurrentHP <= 0.0f)
-	{
-		Die();
-	}
-
-	// update the HUD
-	OnDamaged.Broadcast(FMath::Max(0.0f, CurrentHP / MaxHP));
-
-	return Damage;
+void AShooterCharacter::Multicast_UpdateHealth_Implementation(float HealthRatio)
+{
+	OnDamaged.Broadcast(HealthRatio);
 }
 
 void AShooterCharacter::DoStartFiring()
@@ -323,18 +333,35 @@ void AShooterCharacter::Die()
 		
 	// stop character movement
 	GetCharacterMovement()->StopMovementImmediately();
-
-	// disable controls
-	DisableInput(nullptr);
-
-	// reset the bullet counter UI
-	OnBulletCountUpdated.Broadcast(0, 0);
-
-	// call the BP handler
-	BP_OnDeath();
+	Multicast_DeathHandle();
+	// // disable controls
+	// DisableInput(nullptr);
+	//
+	// // reset the bullet counter UI
+	// OnBulletCountUpdated.Broadcast(0, 0);
+	//
+	// // call the BP handler
+	// BP_OnDeath();
 
 	// schedule character respawn
 	GetWorld()->GetTimerManager().SetTimer(RespawnTimer, this, &AShooterCharacter::OnRespawn, RespawnTime, false);
+}
+
+void AShooterCharacter::Multicast_DeathHandle_Implementation()
+{
+	if (AController* PController = GetController())
+	{
+		if (APlayerController* PlayerController = Cast<APlayerController>(PController))
+		{
+			if (PlayerController->IsLocalController())
+			{
+				DisableInput(PlayerController);
+			}			
+		}
+	}
+	OnBulletCountUpdated.Broadcast(0, 0);
+	BP_OnDeath();
+
 }
 
 void AShooterCharacter::OnRespawn()

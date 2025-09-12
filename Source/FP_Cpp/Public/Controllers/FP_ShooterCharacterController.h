@@ -40,6 +40,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Shooter|Player")
 	FName PlayerPawnTag = FName("Player");
 
+	UPROPERTY()
 	TObjectPtr<UShooterBulletCounterUI> BulletCounterUI;
 	
 	UFUNCTION()
