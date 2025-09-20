@@ -12,6 +12,7 @@
 #include "Camera/CameraComponent.h"
 #include "TimerManager.h"
 #include "ShooterGameMode.h"
+#include "Controllers/FP_ShooterCharacterController.h"
 #include "Net/UnrealNetwork.h"
 
 AShooterCharacter::AShooterCharacter()
@@ -44,6 +45,13 @@ void AShooterCharacter::BeginPlay()
 
 	// update the HUD
 	OnDamaged.Broadcast(1.0f);
+	{
+		AFP_ShooterCharacterController* ShooterController = Cast<AFP_ShooterCharacterController>(GetController());
+		if (ShooterController)
+		{
+			ShooterController->BroadCastHealthValue(1.0f);
+		}
+	}
 }
 
 void AShooterCharacter::EndPlay(EEndPlayReason::Type EndPlayReason)
@@ -95,15 +103,22 @@ float AShooterCharacter::TakeDamage(float Damage, struct FDamageEvent const& Dam
 
 		// update the HUD
 		
-		Client_UpdateHealth(FMath::Max(0.0f, CurrentHP / MaxHP));
+		Multicast_UpdateHealth(FMath::Max(0.0f, CurrentHP / MaxHP));
 		return Damage;
 	}
 	return 0.0f;
 }
 
-void AShooterCharacter::Client_UpdateHealth_Implementation(float HealthRatio)
+void AShooterCharacter::Multicast_UpdateHealth_Implementation(float HealthRatio)
 {
-	OnDamaged.Broadcast(HealthRatio);
+	//	OnDamaged.Broadcast(HealthRatio);if (IsLocallyControlled())
+	{
+		AFP_ShooterCharacterController* ShooterController = Cast<AFP_ShooterCharacterController>(GetController());
+		if (ShooterController)
+		{
+			ShooterController->BroadCastHealthValue(HealthRatio);
+		}
+	}
 }
 
 void AShooterCharacter::DoStartFiring()

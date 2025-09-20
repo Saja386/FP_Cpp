@@ -10,6 +10,8 @@ class UShooterBulletCounterUI;
 class AShooterCharacter;
 class UShooterBulletCounterUI;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPawnDamagedSignature , float , HealthPersent);
+
 /**
  * 
  */
@@ -17,6 +19,11 @@ UCLASS()
 class FP_CPP_API AFP_ShooterCharacterController : public AFP_Controller
 {
 	GENERATED_BODY()
+public:
+	virtual void BroadCastHealthValue (float Percent);
+	
+	UPROPERTY(BlueprintAssignable , Category = "PlayersData")
+	FOnPawnDamagedSignature OnPawnDamagedDelegate ;
 protected:
 	UPROPERTY(EditAnywhere , Category = "Input")
 	TObjectPtr<UInputMappingContext> ShooterMappingContext;
@@ -53,6 +60,8 @@ protected:
 	/** Called when the possessed pawn is damaged */
 	UFUNCTION()
 	void OnPawnDamaged(float LifePercent);
+	UFUNCTION(Client , Reliable)
+	void UpdateMenuHealthBar (float LifePercent);
 private:
 	void StartFireTriggerd ();
 	void StopFireTriggerd();

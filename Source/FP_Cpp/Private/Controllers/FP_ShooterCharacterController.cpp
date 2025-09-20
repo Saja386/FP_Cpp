@@ -12,6 +12,11 @@
 #include "Kismet/GameplayStatics.h"
 
 
+void AFP_ShooterCharacterController::BroadCastHealthValue(float Percent)
+{
+	OnPawnDamagedDelegate.Broadcast(Percent);
+}
+
 void AFP_ShooterCharacterController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
@@ -76,6 +81,8 @@ void AFP_ShooterCharacterController::OnPossess(APawn* InPawn)
 
 		// force update the life bar
 		ShooterCharacter->OnDamaged.Broadcast(1.0f);
+		OnPawnDamagedDelegate.Broadcast(1.0f);
+
 	}
 }
 
@@ -128,12 +135,25 @@ void AFP_ShooterCharacterController::OnBulletCountUpdated(int32 MagazineSize, in
 void AFP_ShooterCharacterController::OnPawnDamaged(float LifePercent)
 {
 	UE_LOG(LogTemp , Warning , TEXT("Life Percent : %f") , LifePercent);
-
-	if (IsValid(BulletCounterUI))
-{
-	UE_LOG(LogTemp , Warning , TEXT("Life Percent : %f") , LifePercent);
-	BulletCounterUI->BP_Damaged(LifePercent);
+	if (IsValid(BulletCounterUI)&&HasAuthority())
+	{	
+		UE_LOG(LogTemp , Warning , TEXT("Life Percent : %f") , LifePercent);
+		BulletCounterUI->BP_Damaged(LifePercent);
+		UpdateMenuHealthBar(LifePercent);
+	}
+	if (!HasAuthority())
+	{
+		UpdateMenuHealthBar(LifePercent);
+	}
 }
+
+void AFP_ShooterCharacterController::UpdateMenuHealthBar_Implementation(float LifePercent)
+{
+	if (IsValid(BulletCounterUI))
+	{
+		UE_LOG(LogTemp , Warning , TEXT("Life Percent : %f") , LifePercent);
+		BulletCounterUI->BP_Damaged(LifePercent);
+	}
 }
 
 void AFP_ShooterCharacterController::StartFireTriggerd()
