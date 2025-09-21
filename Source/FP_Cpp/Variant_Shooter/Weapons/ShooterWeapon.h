@@ -131,10 +131,12 @@ protected:
 public:
 
 	/** Activates this weapon and gets it ready to fire */
-	void ActivateWeapon();
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_ActivateWeapon();
 
 	/** Deactivates this weapon */
-	void DeactivateWeapon();
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_DeactivateWeapon();
 
 	/** Start firing this weapon */
 	void StartFiring();

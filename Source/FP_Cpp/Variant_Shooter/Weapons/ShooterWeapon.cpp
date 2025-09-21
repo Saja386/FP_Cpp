@@ -14,6 +14,9 @@
 
 AShooterWeapon::AShooterWeapon()
 {
+	bNetLoadOnClient = true;
+	bReplicates = true;
+	SetReplicatingMovement(true);	
 	PrimaryActorTick.bCanEverTick = true;
 
 	// create the root
@@ -68,7 +71,7 @@ void AShooterWeapon::OnOwnerDestroyed(AActor* DestroyedActor)
 	Destroy();
 }
 
-void AShooterWeapon::ActivateWeapon()
+void AShooterWeapon::Multicast_ActivateWeapon_Implementation()
 {
 	// unhide this weapon
 	SetActorHiddenInGame(false);
@@ -77,7 +80,7 @@ void AShooterWeapon::ActivateWeapon()
 	WeaponOwner->OnWeaponActivated(this);
 }
 
-void AShooterWeapon::DeactivateWeapon()
+void AShooterWeapon::Multicast_DeactivateWeapon_Implementation()
 {
 	// ensure we're no longer firing this weapon while deactivated
 	StopFiring();

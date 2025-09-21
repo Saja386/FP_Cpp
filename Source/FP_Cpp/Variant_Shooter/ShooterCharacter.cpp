@@ -162,7 +162,7 @@ void AShooterCharacter::DoSwitchWeapon()
 	if (OwnedWeapons.Num() > 1)
 	{
 		// deactivate the old weapon
-		CurrentWeapon->DeactivateWeapon();
+		CurrentWeapon->Multicast_DeactivateWeapon();
 
 		// find the index of the current weapon in the owned list
 		int32 WeaponIndex = OwnedWeapons.Find(CurrentWeapon);
@@ -182,7 +182,7 @@ void AShooterCharacter::DoSwitchWeapon()
 		CurrentWeapon = OwnedWeapons[WeaponIndex];
 
 		// activate the new weapon
-		CurrentWeapon->ActivateWeapon();
+		CurrentWeapon->Multicast_ActivateWeapon();
 	}
 }
 
@@ -192,7 +192,7 @@ void AShooterCharacter::Server_DoSwitchWeapon_Implementation()
 	if (OwnedWeapons.Num() > 1)
 	{
 		// deactivate the old weapon
-		CurrentWeapon->DeactivateWeapon();
+		CurrentWeapon->Multicast_DeactivateWeapon();
 
 		// find the index of the current weapon in the owned list
 		int32 WeaponIndex = OwnedWeapons.Find(CurrentWeapon);
@@ -212,7 +212,7 @@ void AShooterCharacter::Server_DoSwitchWeapon_Implementation()
 		CurrentWeapon = OwnedWeapons[WeaponIndex];
 
 		// activate the new weapon
-		CurrentWeapon->ActivateWeapon();
+		CurrentWeapon->Multicast_ActivateWeapon();
 	}
 }
 
@@ -265,8 +265,9 @@ FVector AShooterCharacter::GetWeaponTargetLocation()
 void AShooterCharacter::AddWeaponClass(const TSubclassOf<AShooterWeapon>& WeaponClass)
 {
 	// do we already own this weapon?
+	if (!HasAuthority()){return;}
 	AShooterWeapon* OwnedWeapon = FindWeaponOfType(WeaponClass);
-
+	
 	if (!OwnedWeapon)
 	{
 		// spawn the new weapon
@@ -286,12 +287,12 @@ void AShooterCharacter::AddWeaponClass(const TSubclassOf<AShooterWeapon>& Weapon
 			// if we have an existing weapon, deactivate it
 			if (CurrentWeapon)
 			{
-				CurrentWeapon->DeactivateWeapon();
+				CurrentWeapon->Multicast_DeactivateWeapon();
 			}
 
 			// switch to the new weapon
 			CurrentWeapon = AddedWeapon;
-			CurrentWeapon->ActivateWeapon();
+			CurrentWeapon->Multicast_ActivateWeapon();
 		}
 	}
 }
@@ -334,10 +335,12 @@ AShooterWeapon* AShooterCharacter::FindWeaponOfType(TSubclassOf<AShooterWeapon> 
 
 void AShooterCharacter::Die()
 {
+	//this might casue problem for  the clients --------- 
+	if (!HasAuthority()){return;}
 	// deactivate the weapon
 	if (IsValid(CurrentWeapon))
 	{
-		CurrentWeapon->DeactivateWeapon();
+		CurrentWeapon->Multicast_DeactivateWeapon();
 	}
 		
 	// stop character movement
