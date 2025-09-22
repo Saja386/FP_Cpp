@@ -178,10 +178,10 @@ void AShooterWeapon::FireProjectile(const FVector& TargetLocation)
 	AShooterProjectile* Projectile = GetWorld()->SpawnActor<AShooterProjectile>(ProjectileClass, ProjectileTransform, SpawnParams);
 
 	// play the firing montage
-	WeaponOwner->PlayFiringMontage(FiringMontage);
+	//WeaponOwner->PlayFiringMontage(FiringMontage);
 
 	// add recoil
-	WeaponOwner->AddWeaponRecoil(FiringRecoil);
+	//WeaponOwner->AddWeaponRecoil(FiringRecoil);
 
 	// consume bullets
 	--CurrentBullets;
@@ -193,7 +193,7 @@ void AShooterWeapon::FireProjectile(const FVector& TargetLocation)
 	}
 
 	// update the weapon HUD
-	WeaponOwner->UpdateWeaponHUD(CurrentBullets, MagazineSize);
+	//WeaponOwner->UpdateWeaponHUD(CurrentBullets, MagazineSize);
 }
 
 FTransform AShooterWeapon::CalculateProjectileSpawnTransform(const FVector& TargetLocation) const
