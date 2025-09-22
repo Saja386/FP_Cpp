@@ -75,9 +75,10 @@ void AShooterWeapon::Multicast_ActivateWeapon_Implementation()
 {
 	// unhide this weapon
 	SetActorHiddenInGame(false);
-
-	// notify the owner
-	WeaponOwner->OnWeaponActivated(this);
+	if (WeaponOwner != nullptr)
+	{
+		WeaponOwner->OnWeaponActivated(this);
+	}
 }
 
 void AShooterWeapon::Multicast_DeactivateWeapon_Implementation()
